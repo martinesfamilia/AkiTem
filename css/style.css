@@ -1,4 +1,7 @@
-/* css/style.css */
+/* =========================================
+   AKITEM - MÁQUINA DE ANÚNCIOS BLINDADA
+   Tema: Terminal / App Dark (Neon Green)
+   ========================================= */
 
 :root {
     --bg-primary: #0a0a0a;
@@ -11,9 +14,8 @@
     --accent: #00ff88;
     --accent-hover: #00e676;
     --accent-soft: rgba(0, 255, 136, 0.1);
-    --warning: #f59e0b;
-    --error: #ef4444;
-    --success: #10b981;
+    --font-main: 'Inter', system-ui, -apple-system, sans-serif;
+    --font-mono: 'JetBrains Mono', ui-monospace, monospace;
 }
 
 * {
@@ -22,16 +24,21 @@
     box-sizing: border-box;
 }
 
+html {
+    scroll-behavior: smooth;
+}
+
 body {
-    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    font-family: var(--font-main);
     background: var(--bg-primary);
     color: var(--text-primary);
     line-height: 1.6;
     overflow-x: hidden;
+    -webkit-font-smoothing: antialiased;
 }
 
 .mono {
-    font-family: 'JetBrains Mono', monospace;
+    font-family: var(--font-mono);
 }
 
 .container {
@@ -40,7 +47,9 @@ body {
     padding: 0 24px;
 }
 
-/* Header */
+/* =========================================
+   HEADER
+   ========================================= */
 .header {
     position: sticky;
     top: 0;
@@ -50,7 +59,7 @@ body {
     border-bottom: 1px solid var(--border);
 }
 
-.header .container {
+.header-inner {
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -84,13 +93,15 @@ body {
     font-size: 18px;
     font-weight: 700;
     letter-spacing: -0.5px;
+    color: var(--text-primary);
 }
 
 .tagline {
     font-size: 11px;
     color: var(--text-muted);
-    font-family: 'JetBrains Mono', monospace;
+    font-family: var(--font-mono);
     letter-spacing: 0.1em;
+    text-transform: uppercase;
 }
 
 .nav {
@@ -110,23 +121,21 @@ body {
     color: var(--accent);
 }
 
-/* Hero */
+/* =========================================
+   HERO SECTION
+   ========================================= */
 .hero {
-    padding: 120px 0;
+    padding: 100px 0;
     background: linear-gradient(180deg, var(--bg-primary) 0%, var(--bg-secondary) 100%);
-}
-
-.hero-content {
     text-align: center;
-    max-width: 800px;
-    margin: 0 auto;
 }
 
 .hero-title {
-    font-size: clamp(28px, 5vw, 48px);
+    font-size: clamp(32px, 5vw, 56px);
     font-weight: 700;
-    line-height: 1.2;
+    line-height: 1.1;
     margin-bottom: 24px;
+    letter-spacing: -1px;
 }
 
 .highlight {
@@ -135,7 +144,7 @@ body {
 
 .highlight-number {
     color: var(--accent);
-    font-family: 'JetBrains Mono', monospace;
+    font-family: var(--font-mono);
     font-weight: 700;
 }
 
@@ -143,6 +152,9 @@ body {
     font-size: 18px;
     color: var(--text-secondary);
     margin-bottom: 32px;
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
 }
 
 .hero-badges {
@@ -160,9 +172,12 @@ body {
     border: 1px solid rgba(0, 255, 136, 0.2);
     border-radius: 20px;
     color: var(--accent);
+    font-weight: 500;
 }
 
-/* Buttons */
+/* =========================================
+   BUTTONS
+   ========================================= */
 .btn-primary {
     display: inline-flex;
     align-items: center;
@@ -183,7 +198,7 @@ body {
 .btn-primary:hover {
     background: var(--accent-hover);
     transform: translateY(-2px);
-    box-shadow: 0 0 30px rgba(0, 255, 136, 0.4);
+    box-shadow: 0 0 30px rgba(0, 255, 136, 0.5);
 }
 
 .btn-large {
@@ -191,9 +206,11 @@ body {
     font-size: 16px;
 }
 
-/* Sections */
+/* =========================================
+   SECTIONS
+   ========================================= */
 .section {
-    padding: 100px 0;
+    padding: 80px 0;
 }
 
 .section-dark {
@@ -205,6 +222,7 @@ body {
     font-weight: 700;
     text-align: center;
     margin-bottom: 16px;
+    letter-spacing: -0.5px;
 }
 
 .section-subtitle {
@@ -215,7 +233,9 @@ body {
     margin: 0 auto 60px;
 }
 
-/* Steps */
+/* =========================================
+   STEPS (COMO FUNCIONA)
+   ========================================= */
 .steps {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
@@ -229,6 +249,12 @@ body {
     border-radius: 16px;
     padding: 32px;
     position: relative;
+    transition: transform 0.2s, border-color 0.2s;
+}
+
+.step:hover {
+    transform: translateY(-4px);
+    border-color: rgba(0, 255, 136, 0.3);
 }
 
 .step-number {
@@ -245,6 +271,7 @@ body {
     justify-content: center;
     font-weight: 700;
     font-size: 18px;
+    font-family: var(--font-mono);
 }
 
 .step h3 {
@@ -266,9 +293,10 @@ body {
 }
 
 .step-example code {
-    font-family: 'JetBrains Mono', monospace;
+    font-family: var(--font-mono);
     font-size: 12px;
     color: var(--accent);
+    line-height: 1.5;
 }
 
 .step-list {
@@ -279,6 +307,7 @@ body {
 .step-list li {
     padding: 8px 0;
     color: var(--text-secondary);
+    font-size: 14px;
 }
 
 /* CTA Box */
@@ -308,9 +337,12 @@ body {
     padding: 16px;
     color: var(--accent);
     font-weight: 600;
+    display: inline-block;
 }
 
-/* Validation */
+/* =========================================
+   VALIDAÇÃO FIEL
+   ========================================= */
 .validation-container {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -334,6 +366,7 @@ body {
     font-size: 13px;
     color: var(--text-muted);
     margin-bottom: 24px;
+    line-height: 1.5;
 }
 
 .input-group {
@@ -346,6 +379,7 @@ body {
     font-weight: 500;
     margin-bottom: 8px;
     color: var(--text-secondary);
+    font-family: var(--font-mono);
 }
 
 .input-group input {
@@ -356,13 +390,14 @@ body {
     border-radius: 10px;
     color: var(--text-primary);
     font-size: 14px;
-    font-family: 'JetBrains Mono', monospace;
-    transition: border-color 0.2s;
+    font-family: var(--font-mono);
+    transition: border-color 0.2s, box-shadow 0.2s;
 }
 
 .input-group input:focus {
     outline: none;
     border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(0, 255, 136, 0.1);
 }
 
 .validation-result {
@@ -371,17 +406,12 @@ body {
     border-radius: 16px;
     padding: 32px;
     animation: slideIn 0.5s ease;
+    box-shadow: 0 0 30px rgba(0, 255, 136, 0.1);
 }
 
 @keyframes slideIn {
-    from {
-        opacity: 0;
-        transform: translateX(20px);
-    }
-    to {
-        opacity: 1;
-        transform: translateX(0);
-    }
+    from { opacity: 0; transform: translateX(20px); }
+    to { opacity: 1; transform: translateX(0); }
 }
 
 .result-header {
@@ -407,10 +437,13 @@ body {
 .result-header h3 {
     font-size: 20px;
     color: var(--accent);
+    font-family: var(--font-mono);
+    letter-spacing: 1px;
 }
 
 .result-content p {
     margin-bottom: 12px;
+    color: var(--text-secondary);
 }
 
 .id-display {
@@ -419,22 +452,27 @@ body {
     border-radius: 10px;
     padding: 16px;
     margin: 16px 0;
+    text-align: center;
 }
 
 .id-display code {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 18px;
+    font-family: var(--font-mono);
+    font-size: 20px;
     color: var(--accent);
     font-weight: 700;
+    letter-spacing: 1px;
 }
 
 .result-info {
     font-size: 13px;
     color: var(--text-muted);
     font-style: italic;
+    margin-top: 16px;
 }
 
-/* Features */
+/* =========================================
+   FEATURES (O QUE VOCÊ RECEBE)
+   ========================================= */
 .features-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
@@ -451,7 +489,7 @@ body {
 
 .feature-card:hover {
     transform: translateY(-4px);
-    border-color: var(--accent);
+    border-color: rgba(0, 255, 136, 0.3);
 }
 
 .feature-card.featured {
@@ -478,6 +516,7 @@ body {
     color: var(--text-secondary);
     padding-left: 24px;
     position: relative;
+    font-size: 14px;
 }
 
 .feature-card li::before {
@@ -485,9 +524,12 @@ body {
     position: absolute;
     left: 0;
     color: var(--accent);
+    font-weight: bold;
 }
 
-/* Pricing */
+/* =========================================
+   PRICING (PREÇO)
+   ========================================= */
 .pricing-card {
     max-width: 600px;
     margin: 0 auto;
@@ -496,6 +538,7 @@ body {
     border-radius: 24px;
     padding: 48px;
     text-align: center;
+    box-shadow: 0 0 40px rgba(0, 255, 136, 0.1);
 }
 
 .pricing-header {
@@ -515,7 +558,8 @@ body {
     font-size: 56px;
     font-weight: 700;
     color: var(--accent);
-    font-family: 'JetBrains Mono', monospace;
+    font-family: var(--font-mono);
+    letter-spacing: -2px;
 }
 
 .price-note {
@@ -533,6 +577,7 @@ body {
 .pricing-benefits h3 {
     font-size: 18px;
     margin-bottom: 16px;
+    color: var(--text-primary);
 }
 
 .benefits-list {
@@ -543,6 +588,7 @@ body {
     padding: 12px 0;
     font-size: 15px;
     border-bottom: 1px solid var(--border);
+    color: var(--text-secondary);
 }
 
 .benefits-list li:last-child {
@@ -558,9 +604,12 @@ body {
 .pricing-guarantee {
     font-size: 13px;
     color: var(--text-muted);
+    margin-top: 16px;
 }
 
-/* Footer */
+/* =========================================
+   FOOTER
+   ========================================= */
 .footer {
     border-top: 1px solid var(--border);
     padding: 40px 0;
@@ -570,10 +619,13 @@ body {
 .footer-text {
     font-size: 12px;
     color: var(--text-muted);
-    font-family: 'JetBrains Mono', monospace;
+    font-family: var(--font-mono);
+    line-height: 1.8;
 }
 
-/* Plano B Button */
+/* =========================================
+   PLANO B (RETROGAMES BUTTON)
+   ========================================= */
 .plano-b {
     position: fixed;
     bottom: 20px;
@@ -587,8 +639,9 @@ body {
     border: 2px solid var(--accent);
     color: var(--accent);
     border-radius: 12px;
-    font-family: 'JetBrains Mono', monospace;
+    font-family: var(--font-mono);
     font-size: 14px;
+    font-weight: 600;
     cursor: pointer;
     transition: all 0.3s;
     box-shadow: 0 0 20px rgba(0, 255, 136, 0.3);
@@ -598,14 +651,16 @@ body {
     background: var(--accent);
     color: var(--bg-primary);
     transform: scale(1.05);
+    box-shadow: 0 0 30px rgba(0, 255, 136, 0.5);
 }
 
-/* Utilities */
+/* =========================================
+   UTILITIES & RESPONSIVE
+   ========================================= */
 .hidden {
     display: none !important;
 }
 
-/* Responsive */
 @media (max-width: 768px) {
     .nav {
         display: none;
@@ -621,5 +676,13 @@ body {
     
     .price {
         font-size: 40px;
+    }
+    
+    .hero {
+        padding: 60px 0;
+    }
+    
+    .section {
+        padding: 60px 0;
     }
 }
