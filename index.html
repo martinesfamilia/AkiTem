@@ -1,416 +1,256 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>AkiTem — Máquina de Anúncios Blindada v2.0</title>
-<script src="https://cdn.tailwindcss.com"></script>
-<style>
-  * { font-family: 'Inter', system-ui, sans-serif; }
-  .mono { font-family: 'JetBrains Mono', ui-monospace, monospace; }
-  body { background: #0a0a0a; color: #f5f5f5; }
-  .glow { box-shadow: 0 0 20px rgba(255, 230, 0, 0.3); }
-  .glow-green { box-shadow: 0 0 20px rgba(0, 255, 136, 0.3); }
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AkiTem — Máquina de Anúncios Blindada</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
 </head>
 <body>
 
-<div id="root"></div>
-
-<script type="module">
-import React, { useState, useEffect, useMemo } from 'https://esm.sh/react@18.3.1';
-import { createRoot } from 'https://esm.sh/react-dom@18.3.1/client';
-
-// ============================================
-// CONFIGURAÇÕES GLOBAIS
-// ============================================
-const LOJA_URL = "https://myaccount.mercadolivre.com.br/bookmarks/list?tab=list#hub";
-const TAG_PADRAO = "ml20240801190340";
-
-// IDs genéricos que DEVEM ser rejeitados
-const IDS_GENERICOS = ['afiliados', 'afiliation', 'generico', 'generic', 'test', 'teste', 'demo', 'sample'];
-
-// ============================================
-// FUNÇÃO BLINDADA DE FORMATAÇÃO DE URL
-// ============================================
-function formatarUrlAfiliado(urlOriginal, tag, mattTool, removerParams) {
-  try {
-    const urlObj = new URL(urlOriginal.trim());
-    
-    // Remove parâmetros inúteis se solicitado
-    if (removerParams) {
-      const paramsParaManter = ['matt_tool', 'matt_word', 'matt_source'];
-      const paramsParaRemover = [];
-      urlObj.searchParams.forEach((value, key) => {
-        if (!paramsParaManter.includes(key)) paramsParaRemover.push(key);
-      });
-      paramsParaRemover.forEach(p => urlObj.searchParams.delete(p));
-    }
-    
-    // Remove hash
-    urlObj.hash = '';
-    
-    // Remove barra final desnecessária
-    if (urlObj.pathname.endsWith('/') && urlObj.pathname.length > 1) {
-      urlObj.pathname = urlObj.pathname.slice(0, -1);
-    }
-    
-    // Validação ANTI-GENÉRICO do matt_tool
-    const mt = (mattTool || '').trim().toLowerCase();
-    if (mt && IDS_GENERICOS.includes(mt)) {
-      return { erro: `⚠️ ID genérico detectado: "${mattTool}". Use seu ID real de afiliado.` };
-    }
-    if (mt && mt.length < 4) {
-      return { erro: `⚠️ ID muito curto: "${mattTool}". IDs reais têm pelo menos 4 caracteres.` };
-    }
-    
-    // Aplica os parâmetros de afiliado
-    const tool = mattTool?.trim() || 'afiliation';
-    urlObj.searchParams.set('matt_tool', tool);
-    urlObj.searchParams.set('matt_word', tag);
-    urlObj.searchParams.set('matt_source', 'akitem');
-    
-    return { sucesso: true, url: urlObj.toString() };
-  } catch (e) {
-    return { erro: `❌ URL inválida: ${urlOriginal}` };
-  }
-}
-
-// ============================================
-// COMPONENTE PRINCIPAL
-// ============================================
-function App() {
-  const [urls, setUrls] = useState('');
-  const [tag, setTag] = useState(TAG_PADRAO);
-  const [mattTool, setMattTool] = useState('');
-  const [removerParams, setRemoverParams] = useState(true);
-  const [incluirRodape, setIncluirRodape] = useState(true);
-  const [adicionarLista, setAdicionarLista] = useState(true);
-  const [resultados, setResultados] = useState([]);
-  const [testeAprovado, setTesteAprovado] = useState(false);
-  const [msgTeste, setMsgTeste] = useState(null);
-  const [msgCopiado, setMsgCopiado] = useState(false);
-  const [msgCopiadoTodos, setMsgCopiadoTodos] = useState(false);
-
-  // Carrega do localStorage
-  useEffect(() => {
-    try {
-      const t = localStorage.getItem('akitem_tag');
-      if (t) setTag(t);
-      const m = localStorage.getItem('akitem_matt_tool');
-      if (m) setMattTool(m);
-    } catch(e) {}
-  }, []);
-
-  const urlsArray = useMemo(() => {
-    return [...new Set(urls.split('\n').map(u => u.trim()).filter(Boolean))];
-  }, [urls]);
-
-  const duplicatasRemovidas = urls.split('\n').filter(u => u.trim()).length - urlsArray.length;
-
-  // ============================================
-  // TESTE PRÉVIO (1 link)
-  // ============================================
-  const testarLink = () => {
-    const primeiro = urlsArray[0];
-    if (!primeiro) {
-      setMsgTeste({ tipo: 'erro', texto: 'Cole pelo menos 1 URL para testar.' });
-      return;
-    }
-    
-    const resultado = formatarUrlAfiliado(primeiro, tag, mattTool, removerParams);
-    
-    if (resultado.erro) {
-      setMsgTeste({ tipo: 'erro', texto: resultado.erro });
-      setTesteAprovado(false);
-    } else {
-      setMsgTeste({ 
-        tipo: 'sucesso', 
-        texto: `✅ TESTE APROVADO! Link gerado com sucesso. Seu ID "${mattTool || 'afiliation'}" é válido. Pode liberar o lote!`,
-        preview: resultado.url
-      });
-      setTesteAprovado(true);
-    }
-  };
-
-  // ============================================
-  // GERAR LOTE (só libera se teste aprovado)
-  // ============================================
-  const gerarLote = () => {
-    if (!testeAprovado) {
-      setMsgTeste({ tipo: 'aviso', texto: '⚠️ Faça o TESTE PRÉVIO primeiro! Clique em "TESTAR 1 LINK" para validar seu ID.' });
-      return;
-    }
-    
-    if (urlsArray.length === 0) return;
-    
-    const lista = urlsArray.map((url, idx) => {
-      const r = formatarUrlAfiliado(url, tag, mattTool, removerParams);
-      return {
-        id: idx,
-        original: url,
-        afiliado: r.sucesso ? r.url : url,
-        status: r.sucesso ? 'ok' : 'erro',
-        erro: r.erro
-      };
-    });
-    
-    setResultados(lista);
-    
-    try {
-      localStorage.setItem('akitem_tag', tag);
-      localStorage.setItem('akitem_matt_tool', mattTool);
-    } catch(e) {}
-  };
-
-  // ============================================
-  // COPIAR / EXPORTAR
-  // ============================================
-  const copiar = async (texto) => {
-    try {
-      await navigator.clipboard.writeText(texto);
-      return true;
-    } catch {
-      return false;
-    }
-  };
-
-  const copiarTodos = async () => {
-    if (resultados.length === 0) return;
-    
-    let texto = resultados
-      .filter(r => r.status === 'ok')
-      .map(r => r.afiliado)
-      .join('\n');
-    
-    if (incluirRodape) {
-      texto += `\n\n🏪 LOJA OFICIAL OBRIGATÓRIA (exigida pelo ML):\n${LOJA_URL}`;
-    }
-    
-    const ok = await copiar(texto);
-    if (ok) {
-      setMsgCopiadoTodos(true);
-      setTimeout(() => setMsgCopiadoTodos(false), 2000);
-    }
-  };
-
-  const exportarCSV = () => {
-    if (resultados.length === 0) return;
-    
-    const escape = (s) => `"${String(s).replace(/"/g, '""').replace(/\n/g, ' ')}"`;
-    
-    let csv = "URL Original,URL Afiliado,Status\n";
-    resultados.forEach(r => {
-      csv += `${escape(r.original)},${escape(r.afiliado)},${escape(r.status)}\n`;
-    });
-    
-    if (incluirRodape) {
-      csv += `\n"LOJA OFICIAL OBRIGATORIA","${LOJA_URL}","Compartilhe na bio/stories"\n`;
-    }
-    
-    const blob = new Blob(["\uFEFF" + csv], { type: 'text/csv;charset=utf-8;' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `akitem_links_${Date.now()}.csv`;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
-  };
-
-  // ============================================
-  // RENDER
-  // ============================================
-  return (
-    <div className="min-h-screen pb-12">
-      {/* HEADER */}
-      <header className="sticky top-0 z-30 bg-[#FFE600] border-b-4 border-black">
-        <div className="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-black text-[#FFE600] rounded-full flex items-center justify-center font-black text-xl">A</div>
-            <div>
-              <div className="font-black text-lg tracking-tight">AKITEM v2.0</div>
-              <div className="text-xs font-bold opacity-70">MÁQUINA BLINDADA • HÍBRIDO</div>
-            </div>
-          </div>
-          <div className="hidden md:flex gap-2 text-xs font-bold">
-            <span className="px-3 py-1 bg-black text-[#FFE600] rounded-full">🛡️ VALIDAÇÃO FIEL</span>
-            <span className="px-3 py-1 bg-white border-2 border-black rounded-full">100% CLIENT-SIDE</span>
-          </div>
-        </div>
-      </header>
-
-      <main className="max-w-6xl mx-auto px-4 py-6 space-y-6">
-        
-        {/* LOJA OBRIGATÓRIA */}
-        <section className="bg-black border-4 border-[#FFE600] rounded-2xl p-5 glow">
-          <div className="flex items-center gap-3 mb-3">
-            <div className="text-3xl">🏪</div>
-            <div>
-              <h2 className="text-[#FFE600] font-black text-lg">LOJA OFICIAL OBRIGATÓRIA</h2>
-              <p className="text-[#FFE600]/70 text-xs">Exigência do Mercado Livre • Compartilhe na bio/stories</p>
-            </div>
-          </div>
-          <div className="flex gap-2">
-            <input readOnly value={LOJA_URL} className="flex-1 px-3 py-2 rounded-lg bg-[#111] text-[#FFE600] text-xs mono font-bold truncate border-2 border-[#FFE600]" />
-            <button onClick={async () => { await copiar(LOJA_URL); setMsgCopiado(true); setTimeout(() => setMsgCopiado(false), 2000); }} className="px-4 py-2 rounded-lg bg-[#FFE600] text-black font-black text-sm hover:brightness-110">
-              {msgCopiado ? '✅ Copiado!' : '📋 Copiar'}
-            </button>
-            <a href={LOJA_URL} target="_blank" rel="noopener" className="px-4 py-2 rounded-lg bg-white border-2 border-[#FFE600] text-black font-black text-sm hover:bg-gray-100">
-              🔗 Abrir
-            </a>
-          </div>
-          <label className="flex items-center gap-2 mt-3 p-3 rounded-lg border-2 border-dashed border-[#FFE600]/50 bg-[#FFE600]/10 cursor-pointer">
-            <input type="checkbox" checked={incluirRodape} onChange={e => setIncluirRodape(e.target.checked)} className="w-4 h-4 accent-[#FFE600]" />
-            <span className="text-xs font-bold text-[#FFE600]">Incluir link da loja no rodapé de todos os links (recomendado)</span>
-          </label>
-        </section>
-
-        {/* GERADOR */}
-        <section className="bg-white border-4 border-black rounded-2xl overflow-hidden shadow-[6px_6px_0_0_#000]">
-          <div className="p-6 bg-[#fffde7] border-b-4 border-black">
-            <h1 className="text-2xl font-black tracking-tight">Gerador de Links Afiliados</h1>
-            <p className="mt-1 text-sm text-gray-700">Cole URLs, teste 1 link, depois libere o lote.</p>
-          </div>
-
-          <div className="p-6 space-y-5">
-            {/* URLs */}
-            <div>
-              <label className="flex items-center justify-between text-xs font-black tracking-widest uppercase mb-2">
-                <span>URLs (1 por linha)</span>
-                <span className="px-2 py-0.5 rounded-full bg-black text-white text-xs">
-                  {urlsArray.length} únicas {duplicatasRemovidas > 0 && `(${duplicatasRemovidas} duplicatas removidas)`}
-                </span>
-              </label>
-              <textarea
-                value={urls}
-                onChange={e => setUrls(e.target.value)}
-                placeholder={`https://www.mercadolivre.com.br/produto/p/MLB123\nhttps://...`}
-                className="w-full min-h-[160px] p-3 rounded-xl border-2 border-black bg-gray-50 focus:bg-white focus:outline-none focus:ring-4 focus:ring-[#FFE600] text-sm mono"
-              />
-            </div>
-
-            {/* Tag e Matt Tool */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <label className="text-xs font-black tracking-widest uppercase mb-1.5 block">Etiqueta (matt_word)</label>
-                <input value={tag} onChange={e => setTag(e.target.value)} className="w-full px-3 py-2.5 rounded-lg border-2 border-black bg-white text-sm mono font-bold" />
-              </div>
-              <div>
-                <label className="text-xs font-black tracking-widest uppercase mb-1.5 block">matt_tool (seu ID real)</label>
-                <input value={mattTool} onChange={e => setMattTool(e.target.value)} placeholder="Ex: ml20240801190340" className="w-full px-3 py-2.5 rounded-lg border-2 border-black bg-white text-sm mono" />
-              </div>
-            </div>
-
-            {/* Opções */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-              <label className="flex items-center gap-2 p-3 rounded-lg border-2 border-black bg-gray-100 cursor-pointer">
-                <input type="checkbox" checked={removerParams} onChange={e => setRemoverParams(e.target.checked)} className="w-4 h-4 accent-black" />
-                <span className="text-xs font-bold">Remover parâmetros inúteis (?search, etc)</span>
-              </label>
-              <label className="flex items-center gap-2 p-3 rounded-lg border-2 border-black bg-gray-100 cursor-pointer">
-                <input type="checkbox" checked={adicionarLista} onChange={e => setAdicionarLista(e.target.checked)} className="w-4 h-4 accent-black" />
-                <span className="text-xs font-bold">Simular adição à lista obrigatória</span>
-              </label>
-            </div>
-
-            {/* Mensagem de Teste */}
-            {msgTeste && (
-              <div className={`p-4 rounded-xl border-2 ${
-                msgTeste.tipo === 'sucesso' ? 'bg-green-100 border-green-500 text-green-900' :
-                msgTeste.tipo === 'erro' ? 'bg-red-100 border-red-500 text-red-900' :
-                'bg-yellow-100 border-yellow-500 text-yellow-900'
-              }`}>
-                <div className="font-bold text-sm">{msgTeste.texto}</div>
-                {msgTeste.preview && (
-                  <div className="mt-2 p-2 bg-white rounded border mono text-xs break-all">{msgTeste.preview}</div>
-                )}
-              </div>
-            )}
-
-            {/* Botões */}
-            <div className="flex flex-wrap gap-3 pt-2">
-              <button onClick={testarLink} className="px-5 py-3 rounded-full bg-black text-[#FFE600] border-2 border-[#FFE600] font-black text-sm hover:brightness-110">
-                🧪 TESTAR 1 LINK PRIMEIRO
-              </button>
-              <button 
-                onClick={gerarLote} 
-                disabled={!testeAprovado}
-                className={`px-5 py-3 rounded-full border-2 font-black text-sm shadow-[3px_3px_0_0_#000] transition ${
-                  testeAprovado 
-                    ? 'bg-[#FFE600] border-black text-black hover:shadow-[4px_4px_0_0_#000] hover:-translate-y-0.5' 
-                    : 'bg-gray-300 border-gray-400 text-gray-500 cursor-not-allowed'
-                }`}
-              >
-                 GERAR EM LOTE {testeAprovado ? '(LIBERADO)' : '(BLOQUEADO)'}
-              </button>
-              <button onClick={() => { setUrls(''); setResultados([]); setTesteAprovado(false); setMsgTeste(null); }} className="px-4 py-3 rounded-full bg-white border-2 border-black font-bold text-sm">
-                🗑️ Limpar
-              </button>
-            </div>
-          </div>
-        </section>
-
-        {/* RESULTADOS */}
-        {resultados.length > 0 && (
-          <section className="bg-white border-4 border-black rounded-2xl overflow-hidden shadow-[6px_6px_0_0_#000]">
-            <div className="p-5 bg-black text-white flex items-center justify-between border-b-4 border-[#FFE600]">
-              <h3 className="font-black text-lg">Resultados • {resultados.filter(r => r.status === 'ok').length} de {resultados.length}</h3>
-              <div className="flex gap-2">
-                <button onClick={copiarTodos} className="px-4 py-2 rounded-full bg-[#FFE600] text-black font-black text-sm">
-                  {msgCopiadoTodos ? '✅ Copiado!' : '📋 Copiar Todos'}
-                </button>
-                <button onClick={exportarCSV} className="px-4 py-2 rounded-full bg-white text-black font-black text-sm border-2 border-[#FFE600]">
-                  ⬇ CSV
-                </button>
-              </div>
-            </div>
-            <div className="p-5 space-y-2 max-h-[500px] overflow-auto">
-              {resultados.map(r => (
-                <div key={r.id} className={`p-3 rounded-xl border-2 ${r.status === 'ok' ? 'border-black bg-green-50' : 'border-red-500 bg-red-50'}`}>
-                  <div className="text-xs text-gray-500 mono truncate">{r.original}</div>
-                  <div className="text-sm mono font-bold break-all mt-1">{r.afiliado}</div>
-                  {r.erro && <div className="text-xs text-red-600 mt-1 font-bold">{r.erro}</div>}
-                  <div className="flex gap-2 mt-2">
-                    <button onClick={async () => { await copiar(r.afiliado); }} className="flex-1 py-1.5 rounded-lg bg-black text-white text-xs font-black">
-                      COPIAR
-                    </button>
-                    <a href={r.original} target="_blank" rel="noopener" className="flex-1 py-1.5 rounded-lg bg-white border-2 border-black text-xs font-black text-center">
-                      ABRIR
-                    </a>
-                  </div>
+    <!-- HEADER -->
+    <header class="header">
+        <div class="container header-inner">
+            <div class="logo">
+                <div class="logo-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
+                        <polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline>
+                        <line x1="12" y1="22.08" x2="12" y2="12"></line>
+                    </svg>
                 </div>
-              ))}
+                <div class="logo-text">
+                    <h1>AkiTem</h1>
+                    <span class="tagline">Máquina de Anúncios Blindada</span>
+                </div>
             </div>
-          </section>
-        )}
+            <nav class="nav">
+                <a href="#como-funciona" class="nav-link">Como Funciona</a>
+                <a href="#validacao" class="nav-link">Validar ID</a>
+                <a href="#preco" class="nav-link">Preço</a>
+            </nav>
+        </div>
+    </header>
 
-        {/* RODAPÉ INFORMATIVO */}
-        <section className="bg-black border-4 border-[#FFE600] rounded-2xl p-5 text-[#FFE600]">
-          <h4 className="font-black text-sm tracking-widest mb-2">️ COMO A BLINDAGEM FUNCIONA</h4>
-          <ul className="text-xs space-y-1.5 leading-relaxed">
-            <li>✅ <b>Parser nativo:</b> usa <code className="bg-[#111] px-1 rounded">new URL()</code> — não quebra com <code>?</code> ou <code>#</code></li>
-            <li>✅ <b>Anti-genérico:</b> rejeita <code className="bg-[#111] px-1 rounded">matt_tool=afiliados</code>, IDs &lt; 4 chars</li>
-            <li>✅ <b>Validação prévia:</b> exige teste de 1 link antes de liberar o lote</li>
-            <li>✅ <b>Deduplicação:</b> remove URLs repetidas automaticamente</li>
-            <li>✅ <b>Rodapé obrigatório:</b> inclui link da loja no CSV e na cópia</li>
-            <li>✅ <b>CSV UTF-8 BOM:</b> abre perfeito no Excel, sem quebrar acentos</li>
-          </ul>
-        </section>
+    <!-- HERO -->
+    <section class="hero">
+        <div class="container">
+            <h2 class="hero-title">
+                Coloque seu <span class="highlight">ID de Afiliada</span> em<br>
+                <span class="highlight-number">2.000 Anúncios</span> ao Mesmo Tempo
+            </h2>
+            <p class="hero-subtitle">
+                Sem trabalhar mais. Sem complicação. Só colar os links e deixar a máquina trabalhar 24h por você.
+            </p>
+            <div class="hero-badges">
+                <span class="badge">✅ Validação 100% Segura</span>
+                <span class="badge">✅ Banho de Loja Incluso</span>
+                <span class="badge">✅ Pronto para Postar</span>
+            </div>
+            <a href="#validacao" class="btn-primary">Começar Agora →</a>
+        </div>
+    </section>
 
-      </main>
+    <!-- COMO FUNCIONA -->
+    <section id="como-funciona" class="section">
+        <div class="container">
+            <h2 class="section-title">Como a Shopee/Amazon Sabe Que o Link é Seu?</h2>
+            <p class="section-subtitle">Entenda o processo em 3 passos simples:</p>
 
-      <footer className="max-w-6xl mx-auto px-6 py-4 text-xs font-bold text-gray-500 flex flex-wrap gap-3 justify-between border-t border-gray-800">
-        <span>AkiTem v2.0 • Híbrido Blindado • Luis Fernando</span>
-        <span>100% client-side • Loja: {LOJA_URL}</span>
-      </footer>
+            <div class="steps">
+                <div class="step">
+                    <div class="step-number">1</div>
+                    <h3>Você se Cadastra</h3>
+                    <p>A Shopee/Amazon gera seu <strong>ID único de afiliado</strong></p>
+                    <div class="step-example">
+                        <code>Ex: coloposte-20 (Amazon)<br>ou 18338650355 (Shopee)</code>
+                    </div>
+                </div>
+
+                <div class="step">
+                    <div class="step-number">2</div>
+                    <h3>ID = Impressão Digital Eletrônica</h3>
+                    <p>Esse ID é como sua "impressão digital eletrônica".<br>
+                    A plataforma reconhece <strong>VOCÊ</strong> em qualquer link.</p>
+                </div>
+
+                <div class="step">
+                    <div class="step-number">3</div>
+                    <h3>Quando Alguém Clica no SEU Link</h3>
+                    <ul class="step-list">
+                        <li>✓ Sistema registra: "Venda da Monika"</li>
+                        <li>✓ Comissão cai na SUA conta</li>
+                        <li>✓ Você ganha sem estar presente</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="cta-box">
+                <h3>E Se Você Pudesse Colocar Seu ID em 2.000 Anúncios Simultâneos?</h3>
+                <p>Imagine: 2.000 produtos diferentes, todos com SEU ID de afiliada, todos trabalhando 24h por você enquanto você dorme.</p>
+                <div class="cta-highlight">
+                    🎁 <strong>PRESENTE:</strong> 2.000 ANÚNCIOS PRONTOS (Economia de R$ 990)
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- VALIDAÇÃO FIEL -->
+    <section id="validacao" class="section section-dark">
+        <div class="container">
+            <h2 class="section-title">Validação Fiel dos Seus IDs</h2>
+            <p class="section-subtitle">
+                Nossa máquina analisa seus links e extrai seu ID com 100% de certeza.<br>
+                Sem erro. Sem malandragem.
+            </p>
+
+            <div class="validation-container">
+                <div class="validation-form">
+                    <h3>Passo 1: Cole Seus Links</h3>
+                    <p class="form-hint">
+                        Vá na Shopee/Amazon, escolha um anúncio aleatório e transforme no SEU link de afiliada.<br>
+                        Cole aqui 3-4 links para validarmos seu ID.
+                    </p>
+
+                    <div class="input-group">
+                        <label for="link1">Link 1 (obrigatório)</label>
+                        <input type="url" id="link1" placeholder="https://shopee.com.br/produto?af_id=..." required>
+                    </div>
+
+                    <div class="input-group">
+                        <label for="link2">Link 2 (para confirmação)</label>
+                        <input type="url" id="link2" placeholder="https://shopee.com.br/outro-produto?af_id=...">
+                    </div>
+
+                    <div class="input-group">
+                        <label for="link3">Link 3 (opcional)</label>
+                        <input type="url" id="link3" placeholder="https://shopee.com.br/mais-um?af_id=...">
+                    </div>
+
+                    <button id="btnValidar" class="btn-primary btn-large">
+                        Validar Meus IDs →
+                    </button>
+                </div>
+
+                <div id="resultadoValidacao" class="validation-result hidden">
+                    <div class="result-header">
+                        <div class="result-icon">✓</div>
+                        <h3>100% DE CERTEZA!</h3>
+                    </div>
+                    <div class="result-content">
+                        <p>Este é o seu ID:</p>
+                        <div class="id-display">
+                            <code id="idDetectado">18338650355</code>
+                        </div>
+                        <p class="result-info">
+                            Para termos mais clareza em minha análise, peço que você gere mais 3 anúncios. Obrigado.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- O QUE VOCÊ RECEBE -->
+    <section class="section">
+        <div class="container">
+            <h2 class="section-title">O Que Você Recebe</h2>
+
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">🔧</div>
+                    <h3>Sistema Completo</h3>
+                    <ul>
+                        <li>Injeção automática de IDs</li>
+                        <li>Shopee, Amazon, Magalu, ML</li>
+                        <li>Validação 100% segura</li>
+                        <li>Blindagem contra nichos proibidos</li>
+                    </ul>
+                </div>
+
+                <div class="feature-card featured">
+                    <div class="feature-icon">✨</div>
+                    <h3>Banho de Loja</h3>
+                    <ul>
+                        <li>Emojis estratégicos 🔥💰⚡</li>
+                        <li>CTAs persuasivos</li>
+                        <li>Formatação profissional</li>
+                        <li>Pronto para postar</li>
+                    </ul>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">🎁</div>
+                    <h3>Pacote Grátis</h3>
+                    <ul>
+                        <li>2.000 anúncios configurados</li>
+                        <li>Templates prontos (1, 3, 4, 6)</li>
+                        <li>Exportação PNG/MP4</li>
+                        <li>Suporte prioritário</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- PREÇO -->
+    <section id="preco" class="section section-dark">
+        <div class="container">
+            <div class="pricing-card">
+                <div class="pricing-header">
+                    <h2 class="pricing-title">Máquina de Anúncios — Edição Black</h2>
+                    <div class="pricing-price">
+                        <span class="price">R$ 490</span>
+                        <span class="price-note">ou 12x R$ 47,50</span>
+                    </div>
+                </div>
+
+                <div class="pricing-benefits">
+                    <h3>Você leva:</h3>
+                    <ul class="benefits-list">
+                        <li>✅ Sistema completo de injeção de IDs</li>
+                        <li>✅ 2.000 anúncios PRONTOS (valor R$ 990)</li>
+                        <li>✅ Banho de loja profissional</li>
+                        <li>✅ Templates para Instagram, Facebook, Telegram</li>
+                        <li>✅ Validação fiel dos seus IDs</li>
+                        <li>✅ Blindagem contra nichos proibidos</li>
+                        <li>✅ Suporte prioritário</li>
+                    </ul>
+                </div>
+
+                <button class="btn-primary btn-large btn-buy">
+                    Quero Minha Máquina Agora →
+                </button>
+
+                <p class="pricing-guarantee">
+                    🛡️ Garantia de 7 dias<br>
+                    Se não gostar, devolvemos seu dinheiro. Sem perguntas.
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer class="footer">
+        <div class="container">
+            <p class="footer-text">
+                AkiTem © 2026 • Máquina Blindada<br>
+                Sem óculos / remédio • Sistema operacional
+            </p>
+        </div>
+    </footer>
+
+    <!-- Botão Plano B (RetroGames) -->
+    <div id="planoB" class="plano-b">
+        <button id="btnPlanoB" class="btn-plano-b">
+            🎮 Jogar de Grátis
+        </button>
     </div>
-  );
-}
 
-createRoot(document.getElementById('root')).render(React.createElement(App));
-</script>
-
+    <script src="js/validacao.js"></script>
+    <script src="js/app.js"></script>
 </body>
 </html>
