@@ -79,3 +79,82 @@ function marcarValidacaoCompleta() {
   const botao = document.querySelector('.btn-plano-b');
   if (botao) botao.style.display = 'none';
 }
+
+// ... todo o código que já tem no app.js ...
+
+// ============================================
+// PLANO B - RETROGAMES (adicionado agora)
+// ============================================
+
+// Detecta quando a pessoa tenta sair da página
+window.addEventListener('beforeunload', function(e) {
+  if (!validacaoCompleta) {
+    e.preventDefault();
+    e.returnValue = 'Espera! Quer jogar de graça antes de ir?';
+    return e.returnValue;
+  }
+});
+
+// Função que aparece quando ela clica em "Não quero pagar"
+function planoB() {
+  const mensagem = confirm(
+    'Tudo bem! Mas antes de ir...\n\n' +
+    'Quer jogar de graça enquanto pensa?\n\n' +
+    ' RetroGames.onl - Jogos clássicos sem gastar nada!'
+  );
+  
+  if (mensagem) {
+    window.open('https://www.retrogames.onl/', '_blank');
+    console.log('[AkiTem] Usuário escolheu Plano B - RetroGames');
+    alert('Divirta-se! Quando quiser voltar, estamos aqui. 🧱');
+  }
+}
+
+// Adiciona o botão "Não quero pagar" dinamicamente
+function criarBotaoPlanoB() {
+  const botao = document.createElement('button');
+  botao.textContent = '🎮 Jogar de Grátis';
+  botao.className = 'btn-plano-b';
+  botao.style.cssText = `
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    padding: 12px 24px;
+    background: #141414;
+    border: 2px solid #00ff88;
+    color: #00ff88;
+    border-radius: 12px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 14px;
+    cursor: pointer;
+    z-index: 1000;
+    transition: all 0.3s;
+  `;
+  
+  botao.onmouseover = () => {
+    botao.style.background = '#00ff88';
+    botao.style.color = '#0a0a0a';
+  };
+  
+  botao.onmouseout = () => {
+    botao.style.background = '#141414';
+    botao.style.color = '#00ff88';
+  };
+  
+  botao.onclick = planoB;
+  
+  document.body.appendChild(botao);
+}
+
+// Ativa o botão quando a página carregar
+document.addEventListener('DOMContentLoaded', criarBotaoPlanoB);
+
+// Variável de controle
+let validacaoCompleta = false;
+
+// Quando a validação completar
+function marcarValidacaoCompleta() {
+  validacaoCompleta = true;
+  const botao = document.querySelector('.btn-plano-b');
+  if (botao) botao.style.display = 'none';
+}
