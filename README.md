@@ -56,6 +56,21 @@ git clone https://github.com/martinesfamilia/AkiTem.git
 
 # Instale dependências (se houver)
 npm install
-
+=============================================================================
+ecnologias
+Frontend: HTML5, CSS3, JavaScript (vanilla)
+Backend: Cloudflare Workers
+Banco de Dados: Cloudflare D1 (SQLite)
+Deploy: Cloudflare Pages + Workers
+Links Úteis
+Landing Page: https://akitem.hdmicro.workers.dev
+RetroGames (Plano B): https://www.retrogames.onl/
+GitHub: https://github.com/martinesfamilia/AkiTem
+Suporte
+WhatsApp: 55 17 99264-4042
+Licença
+© 2026 AkiTem - Todos os direitos reservados.
+"A informação antes da venda é VENDA, o resto é enganação."
+— Filosofia BLOCKinho
 # Deploy no Cloudflare
 wrangler deploy
