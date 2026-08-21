@@ -57,7 +57,7 @@ git clone https://github.com/martinesfamilia/AkiTem.git
 # Instale dependências (se houver)
 npm install
 =============================================================================
-ecnologias
+Tecnologias
 Frontend: HTML5, CSS3, JavaScript (vanilla)
 Backend: Cloudflare Workers
 Banco de Dados: Cloudflare D1 (SQLite)
