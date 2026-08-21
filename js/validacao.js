@@ -181,7 +181,7 @@ function gerarMensagemResultado(validacao) {
             });
             
             if (lojasNaoValidadas.length > 0) {
-                mensagem += `\n️ Estas lojas precisam de mais links:\n`;
+                mensagem += `\n⚠️ Estas lojas precisam de mais links:\n`;
                 lojasNaoValidadas.forEach(v => {
                     mensagem += `• ${v.loja}: IDs diferentes (${v.ids.join(', ')})\n`;
                 });
@@ -193,83 +193,6 @@ function gerarMensagemResultado(validacao) {
     }
     
     return { tipo, mensagem, validacaoFinal };
-}
-
-// ============================================
-// FUNÇÃO: TUTORIAL PASSO A PASSO SHOPEE
-// ============================================
-function getTutorialShopee() {
-    return `
-📱 COMO CONSEGUIR SEU ID DA SHOPEE (PASSO A PASSO):
-
-1️⃣ Acesse: https://affiliate.shopee.com.br
-2️ Faça login com sua conta Shopee
-3️ No menu, clique em "Ferramentas" → "Gerador de Links"
-4️⃣ Cole o link de qualquer produto da Shopee
-5️⃣ Clique em "Gerar Link"
-6️⃣ Copie o link gerado (ele terá seu af_id no final)
-7️⃣ Cole esse link aqui na nossa máquina
-
-💡 DICA: Seu ID aparece assim no link:
-https://shopee.com.br/produto?af_id=18338650355
-                                        ↑
-                                    SEU ID AQUI
-
-🔒 Esse ID é sua "impressão digital eletrônica"
-A Shopee reconhece VOCÊ em qualquer link com esse ID.
-    `;
-}
-
-// ============================================
-// FUNÇÃO: TUTORIAL DAS OUTRAS LOJAS
-// ============================================
-function getTutorialOutrasLojas() {
-    return {
-        amazon: `
- COMO CONSEGUIR SEU ID DA AMAZON:
-
-1️⃣ Acesse: https://associados.amazon.com.br
-2️⃣ Faça login na sua conta de afiliado
-3️ Use a barra "SiteStrip" ou vá em "Ferramentas" → "Gerador de Links"
-4️ Cole o link do produto Amazon
-5️ Clique em "Gerar Link"
-6️⃣ Copie o link (ele terá seu tag no final)
-
-💡 Seu ID aparece assim:
-https://amazon.com.br/produto?tag=coloposte-20
-                                      ↑
-                                  SEU ID AQUI
-        `,
-        
-        magalu: `
-🛍️ COMO CONSEGUIR SEU ID DA MAGALU:
-
-1️⃣ Acesse: https://www.magazinevoce.com.br
-2️⃣ Faça login no Magazine Você
-3️⃣ Escolha um produto e clique em "Compartilhar"
-4️⃣ Copie o link gerado (ele terá seu ID no meio)
-
-💡 Seu ID aparece assim:
-https://www.magazinevoce.com.br/coloposte20/produto
-                                      ↑
-                                  SEU ID AQUI
-        `,
-        
-        mercadolivre: `
-️ COMO CONSEGUIR SEU ID DO MERCADO LIVRE:
-
-1️⃣ Acesse: https://www.mercadolivre.com.br/afiliados
-2️⃣ Faça login na sua conta
-3️⃣ Vá em "Ferramentas" → "Gerador de Links"
-4️⃣ Cole o link do produto
-5️ Copie o link gerado
-
-💡 Seu ID aparece assim:
-https://produto.mercadolivre.com.br/MLB-123456?matt_tool=coloposte
-                                                              ↑
-                                                          SEU ID AQUI
-        `
-    };
 }
 
 // ============================================
@@ -301,10 +224,10 @@ function inicializarValidacao() {
         }
         
         // Mostra "processando"
-        btnValidar.textContent = ' Analisando...';
+        btnValidar.textContent = '⏳ Analisando...';
         btnValidar.disabled = true;
         
-        // Simula um pequeno delay para UX
+        // Simula um pequeno delay para UX (sensação de processamento)
         setTimeout(() => {
             // Valida os links
             const validacao = validarLinks(links);
@@ -325,7 +248,7 @@ function inicializarValidacao() {
                     marcarValidacaoCompleta();
                 }
                 
-                // Rola até o resultado
+                // Rola até o resultado suavemente
                 resultadoDiv.scrollIntoView({ behavior: 'smooth', block: 'center' });
                 
             } else {
@@ -357,8 +280,6 @@ if (typeof window !== 'undefined') {
         detectarID,
         validarLinks,
         gerarMensagemResultado,
-        getTutorialShopee,
-        getTutorialOutrasLojas,
         LOJAS_CONFIG
     };
 }
