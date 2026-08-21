@@ -1,1 +1,260 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AkiTem - Máquina de Anúncios Blindada</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <div class="logo">
+                <div class="logo-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
+                        <polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline>
+                        <line x1="12" y1="22.08" x2="12" y2="12"></line>
+                    </svg>
+                </div>
+                <div class="logo-text">
+                    <h1>AkiTem</h1>
+                    <span class="tagline">Máquina de Anúncios Blindada</span>
+                </div>
+            </div>
+            <nav class="nav">
+                <a href="#como-funciona" class="nav-link">Como Funciona</a>
+                <a href="#validacao" class="nav-link">Validar ID</a>
+                <a href="#preco" class="nav-link">Preço</a>
+            </nav>
+        </div>
+    </header>
 
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="container">
+            <div class="hero-content">
+                <h2 class="hero-title">
+                    Coloque seu <span class="highlight">ID de Afiliada</span> em<br>
+                    <span class="highlight-number">2.000 Anúncios</span> ao Mesmo Tempo
+                </h2>
+                <p class="hero-subtitle">
+                    Sem trabalhar mais. Sem complicação. Só colar os links e deixar a máquina trabalhar 24h por você.
+                </p>
+                <div class="hero-badges">
+                    <span class="badge">✅ Validação 100% Segura</span>
+                    <span class="badge">✅ Banho de Loja Incluso</span>
+                    <span class="badge">✅ Pronto para Postar</span>
+                </div>
+                <a href="#validacao" class="btn-primary">
+                    Começar Agora →
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Como Funciona - Passo a Passo Shopee -->
+    <section id="como-funciona" class="section">
+        <div class="container">
+            <h2 class="section-title">Como a Shopee/Amazon Sabe Que o Link é Seu?</h2>
+            <p class="section-subtitle">Entenda o processo em 3 passos simples:</p>
+            
+            <div class="steps">
+                <div class="step">
+                    <div class="step-number">1</div>
+                    <h3>Você se Cadastra</h3>
+                    <p>A Shopee/Amazon gera seu <strong>ID único de afiliado</strong></p>
+                    <div class="step-example">
+                        <code>Ex: coloposte-20 (Amazon)<br>ou 18338650355 (Shopee)</code>
+                    </div>
+                </div>
+                
+                <div class="step">
+                    <div class="step-number">2</div>
+                    <h3>ID = Impressão Digital Eletrônica</h3>
+                    <p>Esse ID é como sua "impressão digital eletrônica"<br>
+                    A plataforma reconhece <strong>VOCÊ</strong> em qualquer link</p>
+                </div>
+                
+                <div class="step">
+                    <div class="step-number">3</div>
+                    <h3>Quando Alguém Clica no SEU Link</h3>
+                    <ul class="step-list">
+                        <li>✓ Sistema registra: "Venda da Monika"</li>
+                        <li>✓ Comissão cai na SUA conta</li>
+                        <li>✓ Você ganha sem estar presente</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="cta-box">
+                <h3>E Se Você Pudesse Colocar Seu ID em 2.000 Anúncios Simultâneos?</h3>
+                <p>Imagine: 2.000 produtos diferentes, todos com SEU ID de afiliada, todos trabalhando 24h por você enquanto você dorme.</p>
+                <div class="cta-highlight">
+                    🎁 <strong>PRESENTE:</strong> 2.000 ANÚNCIOS PRONTOS (Economia de R$ 990)
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Validação Fiel -->
+    <section id="validacao" class="section section-dark">
+        <div class="container">
+            <h2 class="section-title">Validação Fiel dos Seus IDs</h2>
+            <p class="section-subtitle">
+                Nossa máquina analisa seus links e extrai seu ID com 100% de certeza.<br>
+                Sem erro. Sem malandragem.
+            </p>
+
+            <div class="validation-container">
+                <div class="validation-form">
+                    <h3>Passo 1: Cole Seus Links</h3>
+                    <p class="form-hint">
+                        Vá na Shopee/Amazon, escolha um anúncio aleatório e transforme no SEU link de afiliada.<br>
+                        Cole aqui 3-4 links para validarmos seu ID.
+                    </p>
+                    
+                    <div class="input-group">
+                        <label for="link1">Link 1 (obrigatório)</label>
+                        <input type="url" id="link1" placeholder="https://shopee.com.br/produto?af_id=..." required>
+                    </div>
+                    
+                    <div class="input-group">
+                        <label for="link2">Link 2 (para confirmação)</label>
+                        <input type="url" id="link2" placeholder="https://shopee.com.br/outro-produto?af_id=...">
+                    </div>
+                    
+                    <div class="input-group">
+                        <label for="link3">Link 3 (opcional)</label>
+                        <input type="url" id="link3" placeholder="https://shopee.com.br/mais-um?af_id=...">
+                    </div>
+                    
+                    <button id="btnValidar" class="btn-primary btn-large">
+                        Validar Meus IDs →
+                    </button>
+                </div>
+
+                <div id="resultadoValidacao" class="validation-result hidden">
+                    <div class="result-header">
+                        <div class="result-icon">✓</div>
+                        <h3>100% DE CERTEZA!</h3>
+                    </div>
+                    <div class="result-content">
+                        <p>Este é o seu ID:</p>
+                        <div class="id-display">
+                            <code id="idDetectado">18338650355</code>
+                        </div>
+                        <p class="result-info">
+                            Para termos mais clareza em minha análise, peço que você gere mais 3 anúncios. Obrigado.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- O que Você Recebe -->
+    <section class="section">
+        <div class="container">
+            <h2 class="section-title">O Que Você Recebe</h2>
+            
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">🔧</div>
+                    <h3>Sistema Completo</h3>
+                    <ul>
+                        <li>Injeção automática de IDs</li>
+                        <li>Shopee, Amazon, Magalu, ML</li>
+                        <li>Validação 100% segura</li>
+                        <li>Blindagem contra nichos proibidos</li>
+                    </ul>
+                </div>
+                
+                <div class="feature-card featured">
+                    <div class="feature-icon">✨</div>
+                    <h3>Banho de Loja</h3>
+                    <ul>
+                        <li>Emojis estratégicos 🔥💰⚡</li>
+                        <li>CTAs persuasivos</li>
+                        <li>Formatação profissional</li>
+                        <li>Pronto para postar</li>
+                    </ul>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon"></div>
+                    <h3>Pacote Grátis</h3>
+                    <ul>
+                        <li>2.000 anúncios configurados</li>
+                        <li>Templates prontos (1, 3, 4, 6)</li>
+                        <li>Exportação PNG/MP4</li>
+                        <li>Suporte prioritário</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Preço -->
+    <section id="preco" class="section section-dark">
+        <div class="container">
+            <div class="pricing-card">
+                <div class="pricing-header">
+                    <h2 class="pricing-title">Máquina de Anúncios — Edição Black</h2>
+                    <div class="pricing-price">
+                        <span class="price">R$ 490</span>
+                        <span class="price-note">ou 12x R$ 47,50</span>
+                    </div>
+                </div>
+                
+                <div class="pricing-benefits">
+                    <h3>Você leva:</h3>
+                    <ul class="benefits-list">
+                        <li>✅ Sistema completo de injeção de IDs</li>
+                        <li>✅ 2.000 anúncios PRONTOS (valor R$ 990)</li>
+                        <li>✅ Banho de loja profissional</li>
+                        <li>✅ Templates para Instagram, Facebook, Telegram</li>
+                        <li>✅ Validação fiel dos seus IDs</li>
+                        <li>✅ Blindagem contra nichos proibidos</li>
+                        <li>✅ Suporte prioritário</li>
+                    </ul>
+                </div>
+                
+                <button class="btn-primary btn-large btn-buy">
+                    Quero Minha Máquina Agora →
+                </button>
+                
+                <p class="pricing-guarantee">
+                    ️ Garantia de 7 dias<br>
+                    Se não gostar, devolvemos seu dinheiro. Sem perguntas.
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <p class="footer-text">
+                AkiTem © 2026 • Máquina Blindada<br>
+                Sem óculos / remédio • Sistema operacional
+            </p>
+        </div>
+    </footer>
+
+    <!-- Botão Plano B (RetroGames) -->
+    <div id="planoB" class="plano-b hidden">
+        <button id="btnPlanoB" class="btn-plano-b">
+             Jogar de Grátis
+        </button>
+    </div>
+
+    <script src="js/validacao.js"></script>
+    <script src="js/api-exemplos.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>
