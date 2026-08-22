@@ -1,14 +1,12 @@
 name = "akitem-api"
-main = "src/index.js"
+main = "worker.js"  # <--- APONTA PARA O ARQUIVO QUE VOCÊ ACABOU DE CRIAR
 compatibility_date = "2026-08-22"
 
-# O D1 que você acabou de me mostrar
 [[d1_databases]]
 binding = "DB"
 database_name = "maquina-de-anuncios-db"
 database_id = "71ec55b0-84e7-4870-8b94-a8c2998e4738"
 
-# O KV que você já tem (COLEPOSTE_CREDITOS)
 [[kv_namespaces]]
 binding = "KV_CREDITOS"
 id = "c201efb653e742d8a8ff5f8752bd42d1"
