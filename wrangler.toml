@@ -1,12 +1,20 @@
 name = "akitem-api"
-main = "worker.js"  # <--- APONTA PARA O ARQUIVO QUE VOCÊ ACABOU DE CRIAR
+main = "worker.js"
 compatibility_date = "2026-08-22"
 
+# Banco NOVO (AkiTem - para favoritos e configurações)
 [[d1_databases]]
 binding = "DB"
 database_name = "maquina-de-anuncios-db"
 database_id = "71ec55b0-84e7-4870-8b94-a8c2998e4738"
 
+# Banco ANTIGO (ColePosteDB - onde estão os 3000 produtos)
+[[d1_databases]]
+binding = "DB_COLEPOSTE"
+database_name = "colepostedb"
+database_id = "fa0ab338-e271-4e77-bf0d-0faae80a30f7"
+
+# KV (Créditos das afiliadas)
 [[kv_namespaces]]
 binding = "KV_CREDITOS"
 id = "c201efb653e742d8a8ff5f8752bd42d1"
