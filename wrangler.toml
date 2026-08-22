@@ -1,19 +1,14 @@
-name = "migrador-akitem"
+name = "akitem-api"
 main = "src/index.js"
 compatibility_date = "2026-08-22"
 
-# ==========================================
-# 1. D1 ANTIGO (ColePosteDB - A fonte dos dados)
-# ==========================================
+# O D1 que você acabou de me mostrar
 [[d1_databases]]
-binding = "D1_COLEPOSTE"
-database_name = "colepostedb" # Coloque o nome exato do seu banco antigo
-database_id = "COLE_O_ID_ANTIGO_AQUI" # <--- COLE O ID QUE VOCÊ ACHOU NA URL
-
-# ==========================================
-# 2. D1 NOVO (AkiTem - O destino final)
-# ==========================================
-[[d1_databases]]
-binding = "D1_AKITEM"
+binding = "DB"
 database_name = "maquina-de-anuncios-db"
 database_id = "71ec55b0-84e7-4870-8b94-a8c2998e4738"
+
+# O KV que você já tem (COLEPOSTE_CREDITOS)
+[[kv_namespaces]]
+binding = "KV_CREDITOS"
+id = "c201efb653e742d8a8ff5f8752bd42d1"
