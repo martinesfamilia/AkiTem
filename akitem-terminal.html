@@ -1,0 +1,498 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>AkiTem - Terminal de Curadoria</title>
+    <style>
+        /* =========================================
+           VARIÁVEIS DE DESIGN ORGÂNICO (NÃO QUADRADO)
+           ========================================= */
+        :root {
+            --bg-app: #0f111a;
+            --bg-card: #1a1d2d;
+            --bg-glass: rgba(26, 29, 45, 0.85);
+            --text-main: #f4f1ea;
+            --text-muted: #8b92a5;
+            --accent-cyan: #00d2ff;
+            --accent-gold: #d4af37;
+            --accent-green: #2be483;
+            --accent-red: #ff4757;
+            --shopee-color: #ee4d2d;
+            --radius-lg: 28px;
+            --radius-md: 18px;
+            --radius-sm: 12px;
+            --shadow-soft: 0 10px 30px rgba(0, 0, 0, 0.4);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
+        
+        body {
+            background-color: var(--bg-app);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            padding-bottom: 90px; /* Espaço para a navbar inferior */
+        }
+
+        .app-container {
+            width: 100%;
+            max-width: 480px;
+            padding: 20px;
+        }
+
+        /* =========================================
+           HEADER & BADGES
+           ========================================= */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+            padding: 16px 0;
+        }
+        .user-info h2 { font-size: 18px; font-weight: 700; }
+        .user-info p { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
+        
+        .badges-row { display: flex; gap: 10px; margin-bottom: 24px; }
+        .badge {
+            flex: 1;
+            padding: 12px 16px;
+            border-radius: var(--radius-md);
+            font-size: 12px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            backdrop-filter: blur(10px);
+        }
+        .badge-credits { background: rgba(0, 210, 255, 0.1); border: 1px solid rgba(0, 210, 255, 0.2); color: var(--accent-cyan); }
+        .badge-favs { background: rgba(212, 175, 55, 0.1); border: 1px solid rgba(212, 175, 55, 0.2); color: var(--accent-gold); }
+
+        /* =========================================
+           ABAS E CONTEÚDO
+           ========================================= */
+        .tab-content { display: none; animation: fadeIn 0.3s ease; }
+        .tab-content.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        .section-title { font-size: 12px; text-transform: uppercase; color: var(--text-muted); letter-spacing: 1px; margin-bottom: 12px; font-weight: 700; }
+
+        /* Filtros Orgânicos */
+        .store-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 24px; }
+        .store-card {
+            background: var(--bg-card);
+            border: 1px solid rgba(255,255,255,0.05);
+            border-radius: var(--radius-md);
+            padding: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .store-card.active { border-color: var(--accent-cyan); box-shadow: 0 0 15px rgba(0, 210, 255, 0.1); }
+        .store-card.locked { opacity: 0.4; pointer-events: none; position: relative; }
+        .store-card.locked::after { content: '🔒'; position: absolute; right: 10px; top: 10px; font-size: 12px; }
+        .store-info { display: flex; align-items: center; gap: 10px; font-size: 13px; font-weight: 600; }
+        .store-icon { width: 32px; height: 32px; background: rgba(255,255,255,0.05); border-radius: 10px; display: flex; align-items: center; justify-content: center; }
+
+        .nichos-scroll { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 10px; margin-bottom: 24px; scrollbar-width: none; }
+        .nichos-scroll::-webkit-scrollbar { display: none; }
+        .nicho-pill {
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.05);
+            color: var(--text-muted);
+            padding: 8px 18px;
+            border-radius: 50px;
+            font-size: 12px;
+            font-weight: 600;
+            white-space: nowrap;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .nicho-pill.active { background: rgba(0, 210, 255, 0.1); border-color: var(--accent-cyan); color: var(--accent-cyan); }
+
+        /* Lista de Produtos (Esteira) */
+        .products-list { display: flex; flex-direction: column; gap: 12px; }
+        .product-card {
+            background: var(--bg-card);
+            border-radius: var(--radius-md);
+            padding: 16px;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            border: 1px solid transparent;
+            transition: all 0.2s;
+        }
+        .product-card.selected { border-color: var(--accent-green); background: rgba(43, 228, 131, 0.05); }
+        .prod-img { width: 48px; height: 48px; background: rgba(255,255,255,0.05); border-radius: var(--radius-sm); display: flex; align-items: center; justify-content: center; font-size: 20px; }
+        .prod-details { flex: 1; min-width: 0; }
+        .prod-details h4 { font-size: 13px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .prod-details p { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
+        .prod-details p span { color: var(--accent-green); font-weight: 700; }
+        .prod-actions { display: flex; flex-direction: column; gap: 8px; }
+        .btn-fav { background: none; border: none; color: var(--text-muted); font-size: 16px; cursor: pointer; }
+        .btn-fav.active { color: var(--accent-gold); }
+        .btn-select { width: 22px; height: 22px; border-radius: 50%; border: 2px solid var(--text-muted); cursor: pointer; transition: all 0.2s; }
+        .product-card.selected .btn-select { background: var(--accent-green); border-color: var(--accent-green); }
+
+        /* Botão de Ação Principal */
+        .btn-main {
+            width: 100%;
+            background: linear-gradient(135deg, var(--accent-gold), #e2b955);
+            color: #0b1426;
+            border: none;
+            padding: 18px;
+            border-radius: var(--radius-md);
+            font-size: 14px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            cursor: pointer;
+            margin-top: 24px;
+            box-shadow: 0 8px 20px rgba(212, 175, 55, 0.2);
+            transition: transform 0.1s;
+        }
+        .btn-main:active { transform: scale(0.98); }
+        .btn-main:disabled { opacity: 0.5; cursor: not-allowed; }
+
+        /* =========================================
+           NAVBAR INFERIOR (ORGÂNICA)
+           ========================================= */
+        .bottom-nav {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: calc(100% - 40px);
+            max-width: 440px;
+            background: var(--bg-glass);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 50px;
+            display: flex;
+            justify-content: space-around;
+            padding: 8px;
+            box-shadow: var(--shadow-soft);
+            z-index: 100;
+        }
+        .nav-item {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            padding: 10px;
+            border-radius: 40px;
+            cursor: pointer;
+            color: var(--text-muted);
+            font-size: 10px;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+        .nav-item.active { background: rgba(0, 210, 255, 0.1); color: var(--accent-cyan); }
+        .nav-icon { font-size: 18px; }
+
+        /* Preview Modal (Simples) */
+        .preview-box {
+            background: var(--bg-card);
+            border-radius: var(--radius-md);
+            padding: 16px;
+            margin-top: 16px;
+            border: 1px solid rgba(255,255,255,0.05);
+        }
+        .preview-text {
+            width: 100%;
+            background: transparent;
+            border: none;
+            color: var(--text-main);
+            font-size: 12px;
+            line-height: 1.5;
+            resize: none;
+            outline: none;
+            min-height: 100px;
+        }
+        .copy-options { display: flex; gap: 8px; margin-top: 12px; }
+        .btn-copy {
+            flex: 1;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            color: var(--text-main);
+            padding: 10px;
+            border-radius: var(--radius-sm);
+            font-size: 11px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        .btn-copy.active { background: rgba(0, 210, 255, 0.1); border-color: var(--accent-cyan); color: var(--accent-cyan); }
+
+    </style>
+</head>
+<body>
+
+<div class="app-container">
+    
+    <!-- HEADER -->
+    <div class="header">
+        <div class="user-info">
+            <h2>Olá, Maria </h2>
+            <p>Plano Intermediário • ID: 8842</p>
+        </div>
+    </div>
+
+    <!-- BADGES -->
+    <div class="badges-row">
+        <div class="badge badge-credits"> <span id="credit-count">30</span> Créditos</div>
+        <div class="badge badge-favs">★ <span id="fav-count">0</span> Favoritos</div>
+    </div>
+
+    <!-- ABA 1: GARIMPO -->
+    <div id="tab-garimpo" class="tab-content active">
+        <div class="section-title">1. Escolha a Loja (Seu Plano)</div>
+        <div class="store-grid">
+            <div class="store-card active" onclick="toggleStore(this, 'shopee')">
+                <div class="store-info"><div class="store-icon">️</div> Shopee</div>
+                <div class="btn-select" style="width:16px;height:16px;"></div>
+            </div>
+            <div class="store-card active" onclick="toggleStore(this, 'amazon')">
+                <div class="store-info"><div class="store-icon">📦</div> Amazon</div>
+                <div class="btn-select" style="width:16px;height:16px;"></div>
+            </div>
+            <div class="store-card active" onclick="toggleStore(this, 'magalu')">
+                <div class="store-info"><div class="store-icon">⭐</div> Magalu</div>
+                <div class="btn-select" style="width:16px;height:16px;"></div>
+            </div>
+            <!-- ML Bloqueado no Plano Intermediário -->
+            <div class="store-card locked">
+                <div class="store-info"><div class="store-icon">👜</div> Mercado Livre</div>
+            </div>
+        </div>
+
+        <div class="section-title">2. Filtre por Nicho</div>
+        <div class="nichos-scroll">
+            <div class="nicho-pill active" onclick="toggleNicho(this, 'geral')">Geral</div>
+            <div class="nicho-pill" onclick="toggleNicho(this, 'casa')">Casa & Cozinha</div>
+            <div class="nicho-pill" onclick="toggleNicho(this, 'beleza')">Beleza</div>
+            <div class="nicho-pill" onclick="toggleNicho(this, 'tech')">Tech</div>
+            <div class="nicho-pill" onclick="toggleNicho(this, 'moda')">Moda</div>
+        </div>
+
+        <div class="section-title">3. Esteira do D1 (AkiTemDB)</div>
+        <div class="products-list" id="products-container">
+            <!-- Produtos injetados via JS -->
+        </div>
+
+        <button class="btn-main" id="btn-gerar" onclick="goToPreview()">
+            Gerar Banho de Loja (0 itens)
+        </button>
+    </div>
+
+    <!-- ABA 2: PREVIEW & APROVAÇÃO -->
+    <div id="tab-preview" class="tab-content">
+        <div class="section-title">Preview do Banho de Loja</div>
+        <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 16px;">
+            O sistema gerou 3 variações. Escolha a rede social para ver o formato ideal.
+        </p>
+
+        <div class="preview-box">
+            <div class="copy-options">
+                <button class="btn-copy active" onclick="setNetwork('whatsapp', this)"> WhatsApp</button>
+                <button class="btn-copy" onclick="setNetwork('instagram', this)"> Instagram</button>
+                <button class="btn-copy" onclick="setNetwork('telegram', this)">💬 Telegram</button>
+            </div>
+            <textarea id="preview-textarea" class="preview-text"></textarea>
+        </div>
+
+        <div style="margin-top: 20px; background: rgba(255,255,255,0.03); padding: 16px; border-radius: var(--radius-md);">
+            <p style="font-size: 12px; color: var(--text-muted);">🔑 Seu Link de Afiliada (Injetado automaticamente):</p>
+            <input type="text" id="affiliate-link" placeholder="Cole seu link cru aqui..." style="width:100%; background:transparent; border:none; color:var(--accent-cyan); font-size:12px; margin-top:8px; outline:none; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 8px;">
+        </div>
+
+        <button class="btn-main" onclick="confirmPurchase()">
+            Confirmar e Gastar 1 Crédito
+        </button>
+    </div>
+
+    <!-- ABA 3: PERFIL -->
+    <div id="tab-perfil" class="tab-content">
+        <div class="section-title">Seu Controle Geral</div>
+        <div class="preview-box" style="text-align: center; padding: 30px;">
+            <div style="font-size: 40px; margin-bottom: 10px;">👑</div>
+            <h3 style="margin-bottom: 5px;">Maria Silva</h3>
+            <p style="font-size: 12px; color: var(--accent-gold);">Insígnia: Vendedora 🔥</p>
+            <p style="font-size: 11px; color: var(--text-muted); margin-top: 15px;">Faltam 12 posts para virar Top Afiliada</p>
+        </div>
+        <div class="preview-box" style="margin-top: 16px;">
+            <p style="font-size: 12px; margin-bottom: 8px;">📊 Posts Gerados: <strong>42</strong></p>
+            <p style="font-size: 12px; margin-bottom: 8px;">⭐ Favoritos Salvos: <strong>8/100</strong></p>
+            <p style="font-size: 12px;">⏳ Favoritos expiram em: <strong>28 dias</strong></p>
+        </div>
+    </div>
+
+</div>
+
+<!-- NAVBAR INFERIOR -->
+<div class="bottom-nav">
+    <div class="nav-item active" onclick="switchTab('garimpo', this)">
+        <span class="nav-icon">🔍</span> Garimpo
+    </div>
+    <div class="nav-item" onclick="switchTab('preview', this)">
+        <span class="nav-icon">✨</span> Banho
+    </div>
+    <div class="nav-item" onclick="switchTab('perfil', this)">
+        <span class="nav-icon">👤</span> Perfil
+    </div>
+</div>
+
+<script>
+    // =========================================
+    // ESTADO DO SISTEMA (Simulando o D1/Worker)
+    // =========================================
+    const state = {
+        credits: 30,
+        favorites: 0,
+        plan: 'intermediario', // bloqueia ML
+        selectedStore: 'shopee',
+        selectedNicho: 'geral',
+        selectedProducts: [],
+        currentNetwork: 'whatsapp'
+    };
+
+    // Dados Mock do D1 (AkiTemDB)
+    const d1Products = [
+        { id: 1, icon: '📹', name: 'Mini Projetor LED', price: '249,00', store: 'shopee', nicho: 'tech' },
+        { id: 2, icon: '💄', name: 'Batom Matte Longa Duração', price: '29,90', store: 'shopee', nicho: 'beleza' },
+        { id: 3, icon: '🍳', name: 'Jogo de Panelas Antiaderente', price: '189,90', store: 'amazon', nicho: 'casa' },
+        { id: 4, icon: '🎧', name: 'Fone Bluetooth Pro', price: '59,90', store: 'magalu', nicho: 'tech' },
+        { id: 5, icon: '👟', name: 'Tênis Esportivo Confort', price: '120,00', store: 'shopee', nicho: 'moda' }
+    ];
+
+    // Templates de Banho de Loja (10 por rede - aqui 1 de exemplo)
+    const templates = {
+        whatsapp: "🔥 *ALERTA DE OFERTA!* 🔥\nMeninas, achei esse {name} por apenas R$ {price}! 😱\n✅ Qualidade incrível\n👉 Garanta o seu: {link}\n Corre que o estoque voa!",
+        instagram: "Achadinho que vale cada centavo! 😍✨\nEsse {name} mudou meu dia a dia.\n💬 Comenta 'EU QUERO' que te envio o link no Direct!\n#achadinhos #shopee #oferta",
+        telegram: " *GADGET TECH*\nInovação por menos de R$ {price}!\n{name}\n🔗 Link direto: {link}"
+    };
+
+    // =========================================
+    // FUNÇÕES DE NAVEGAÇÃO E UI
+    // =========================================
+    function switchTab(tabName, navElement) {
+        document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+        document.getElementById(`tab-${tabName}`).classList.add('active');
+        
+        document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+        navElement.classList.add('active');
+    }
+
+    function toggleStore(el, store) {
+        if (el.classList.contains('locked')) return;
+        el.classList.toggle('active');
+        state.selectedStore = store; // Simplificado para 1 loja por vez no mock
+        renderProducts();
+    }
+
+    function toggleNicho(el, nicho) {
+        document.querySelectorAll('.nicho-pill').forEach(p => p.classList.remove('active'));
+        el.classList.add('active');
+        state.selectedNicho = nicho;
+        renderProducts();
+    }
+
+    function renderProducts() {
+        const container = document.getElementById('products-container');
+        container.innerHTML = '';
+        
+        const filtered = d1Products.filter(p => p.store === state.selectedStore && (state.selectedNicho === 'geral' || p.nicho === state.selectedNicho));
+        
+        filtered.forEach(p => {
+            const isSelected = state.selectedProducts.find(sp => sp.id === p.id);
+            const card = document.createElement('div');
+            card.className = `product-card ${isSelected ? 'selected' : ''}`;
+            card.onclick = () => toggleProduct(p, card);
+            card.innerHTML = `
+                <div class="prod-img">${p.icon}</div>
+                <div class="prod-details">
+                    <h4>${p.name}</h4>
+                    <p>${p.store} • <span>R$ ${p.price}</span></p>
+                </div>
+                <div class="prod-actions">
+                    <button class="btn-fav" onclick="event.stopPropagation(); toggleFav(this)">☆</button>
+                    <div class="btn-select"></div>
+                </div>
+            `;
+            container.appendChild(card);
+        });
+        updateMainButton();
+    }
+
+    function toggleProduct(product, cardElement) {
+        const index = state.selectedProducts.findIndex(p => p.id === product.id);
+        if (index > -1) {
+            state.selectedProducts.splice(index, 1);
+            cardElement.classList.remove('selected');
+        } else {
+            state.selectedProducts.push(product);
+            cardElement.classList.add('selected');
+        }
+        updateMainButton();
+    }
+
+    function toggleFav(btn) {
+        btn.classList.toggle('active');
+        btn.innerText = btn.classList.contains('active') ? '★' : '☆';
+        state.favorites += btn.classList.contains('active') ? 1 : -1;
+        document.getElementById('fav-count').innerText = state.favorites;
+    }
+
+    function updateMainButton() {
+        const btn = document.getElementById('btn-gerar');
+        const count = state.selectedProducts.length;
+        btn.innerText = count > 0 ? `Gerar Banho de Loja (${count} itens)` : 'Selecione produtos acima';
+        btn.disabled = count === 0;
+    }
+
+    function goToPreview() {
+        if (state.selectedProducts.length === 0) return;
+        switchTab('preview', document.querySelectorAll('.nav-item')[1]);
+        generatePreviewText();
+    }
+
+    function setNetwork(network, btn) {
+        state.currentNetwork = network;
+        document.querySelectorAll('.btn-copy').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        generatePreviewText();
+    }
+
+    function generatePreviewText() {
+        const product = state.selectedProducts[0]; // Pega o primeiro para o mock
+        const userLink = document.getElementById('affiliate-link').value || 'SEU_LINK_AQUI';
+        let text = templates[state.currentNetwork];
+        
+        text = text.replace('{name}', product.name).replace('{price}', product.price).replace('{link}', userLink);
+        document.getElementById('preview-textarea').value = text;
+    }
+
+    function confirmPurchase() {
+        if (state.credits <= 0) {
+            alert('❌ Créditos esgotados! Recarregue no plano.');
+            return;
+        }
+        state.credits--;
+        document.getElementById('credit-count').innerText = state.credits;
+        alert(`✅ Sucesso! 1 crédito gasto. Posts copiados para a área de transferência.`);
+        state.selectedProducts = [];
+        renderProducts();
+        switchTab('garimpo', document.querySelectorAll('.nav-item')[0]);
+    }
+
+    // Inicialização
+    renderProducts();
+</script>
+
+</body>
+</html>
