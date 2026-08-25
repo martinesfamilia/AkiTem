@@ -58,6 +58,60 @@
             border-radius: 24px;
             border: 1px solid rgba(255, 255, 255, 0.05);
             box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Efeito de brilho no header */
+        header::after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.03) 0%, transparent 70%);
+            animation: rotate 20s linear infinite;
+            pointer-events: none;
+        }
+
+        @keyframes rotate {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .logo-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .logo-icon {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 0 20px rgba(99, 102, 241, 0.4);
+            animation: float 3s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-5px); }
+        }
+
+        .logo-text {
+            font-size: 2.5rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #fff 0%, #a5b4fc 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            letter-spacing: -1px;
         }
 
         h1 {
@@ -68,12 +122,14 @@
             -webkit-text-fill-color: transparent;
             margin-bottom: 10px;
             letter-spacing: -1px;
+            display: none; /* Ocultado pois usamos a nova logo */
         }
 
         .subtitle {
             color: var(--text-muted);
             font-size: 1.1rem;
             font-weight: 300;
+            margin-top: 10px;
         }
 
         /* Filtros */
@@ -262,7 +318,7 @@
 
         /* Responsividade */
         @media (max-width: 768px) {
-            h1 { font-size: 2rem; }
+            .logo-text { font-size: 2rem; }
             .filters { flex-direction: column; }
             .filter-group { width: 100%; }
             select, input { width: 100%; }
@@ -273,7 +329,16 @@
 
     <div class="container">
         <header>
-            <h1>AkiTem</h1>
+            <!-- NOVA LOGO -->
+            <div class="logo-container">
+                <div class="logo-icon">
+                    <svg width="30" height="30" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M13 2L3 14H12L11 22L21 10H12L13 2Z" fill="white" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </div>
+                <div class="logo-text">AkiTem</div>
+            </div>
+            
             <p class="subtitle">Máquina de Anúncios Blindada & Inteligente</p>
         </header>
 
@@ -330,82 +395,3 @@
                 id: 4,
                 title: "Smartwatch Xiaomi Mi Band 7 Global",
                 platform: "shopee",
-                price: 189.90,
-                oldPrice: 299.00,
-                info: "Envio Local • Frete Grátis"
-            },
-            {
-                id: 5,
-                title: "Cadeira Gamer ThunderX3 Professional",
-                platform: "ml",
-                price: 1250.00,
-                oldPrice: 1800.00,
-                info: "12x Sem Juros • Garantia de 3 anos"
-            },
-            {
-                id: 6,
-                title: "Console PlayStation 5 Slim Digital Edition",
-                platform: "amazon",
-                price: 3499.00,
-                oldPrice: 3999.00,
-                info: "Disponível Agora • Amazon Prime"
-            }
-        ];
-
-        const grid = document.getElementById('productsGrid');
-        const platformFilter = document.getElementById('platform');
-        const searchFilter = document.getElementById('search');
-
-        function getPlatformColor(platform) {
-            return platform;
-        }
-
-        function formatPrice(value) {
-            return value.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
-        }
-
-        function renderProducts(products) {
-            grid.innerHTML = '';
-            
-            if (products.length === 0) {
-                grid.innerHTML = '<div style="grid-column: 1/-1; text-align: center; color: var(--text-muted); padding: 40px;">Nenhum produto encontrado.</div>';
-                return;
-            }
-
-            products.forEach(product => {
-                const card = document.createElement('div');
-                card.className = 'product-card';
-                
-                card.innerHTML = `
-                    <span class="badge ${product.platform}">${product.platform.toUpperCase()}</span>
-                    <div class="title">${product.title}</div>
-                    <div class="price-container">
-                        <span class="old-price">${formatPrice(product.oldPrice)}</span>
-                        <span class="price">${formatPrice(product.price)}</span>
-                    </div>
-                    <div class="info">${product.info}</div>
-                    <button class="btn-buy" onclick="alert('Indo para: ${product.title}')">Comprar Agora</button>
-                `;
-                
-                grid.appendChild(card);
-            });
-        }
-
-        function filterProducts() {
-            const platform = platformFilter.value;
-            const search = searchFilter.value.toLowerCase();
-
-            const filtered = productsData.filter(product => {
-                const matchesPlatform = platform === 'all' || product.platform === platform;
-                const matchesSearch = product.title.toLowerCase().includes(search);
-                return matchesPlatform && matchesSearch;
-            });
-
-            renderProducts(filtered);
-        }
-
-        // Renderizar inicialmente
-        renderProducts(productsData);
-    </script>
-</body>
-</html>
